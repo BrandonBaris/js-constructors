@@ -10,12 +10,25 @@
  * @property {string} description
  */
 
+
+function Spell ( name, cost, description ) {
+  // instance properties
+  this.name = name;
+  this.cost = cost;
+  this.description = description;
+}
+
   /**
    * Print out all spell details and format it nicely.
    * The format doesnt matter, as long as it contains the spell name, cost, and description.
    * @name printDetails
    */
 
+Spell.prototype.printDetails = function( name, cost, description ){
+   console.log("Name: " + this.name + "\nCost: " + this.cost + "\nDescription: " + this.description);
+};
+
+var warmball = new Spell('Warmball', 1, 'A lukewarm fireball');
 /**
  * A spell that deals damage.
  * We want to keep this code DRY (Don't Repeat Yourself).
@@ -40,6 +53,19 @@
  * @property {number} damage
  * @property {string} description
  */
+ function DamageSpell( name, cost, damage, description ){
+   this.damage = damage;
+   Spell.call(this, name, cost, description);
+ }
+
+ DamageSpell.prototype = Object.create( Spell.prototype, {
+  constructor : {
+    value : Spell
+  }
+});
+
+var commiteor = new DamageSpell('commiteor',9001,9001,'A MASSIVE CHUNK OF CODE');
+
 
 /**
  * Now that you've created some spells, let's create
@@ -54,7 +80,12 @@
  * @property {mana} mana
  * @property {boolean} isAlive  Default value should be `true`.
  */
-
+function Spellcaster(name, health, mana){
+   this.name = name;
+   this.health = health;
+   this.mana = mana;
+   this.isAlive = true;
+}
   /**
    * The spellcaster loses health equal to `damage`.
    * Health should never be negative.
