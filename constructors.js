@@ -28,7 +28,6 @@ Spell.prototype.printDetails = function( name, cost, description ){
    console.log("Name: " + this.name + "\nCost: " + this.cost + "\nDescription: " + this.description);
 };
 
-var warmball = new Spell('Warmball', 1, 'A lukewarm fireball');
 /**
  * A spell that deals damage.
  * We want to keep this code DRY (Don't Repeat Yourself).
@@ -95,7 +94,13 @@ function Spellcaster(name, health, mana){
    * @name inflictDamage
    * @param  {number} damage  Amount of damage to deal to the spellcaster
    */
-
+Spellcaster.prototype.inflictDamage = function(damage){
+   this.health -= damage;
+   if (this.health <= 0){
+      this.health = 0;
+      this.isAlive = false;
+   }
+};
   /**
    * Reduces the spellcaster's mana by `cost`.
    * Mana should only be reduced only if there is enough mana to spend.
@@ -104,7 +109,14 @@ function Spellcaster(name, health, mana){
    * @param  {number} cost      The amount of mana to spend.
    * @return {boolean} success  Whether mana was successfully spent.
    */
-
+Spellcaster.prototype.spendMana = function(cost){
+   if (this.mana >= cost){
+      this.mana -= cost;
+      return true;
+   } else {
+      return false;
+   }
+};
   /**
    * Allows the spellcaster to cast spells.
    * The first parameter should either be a `Spell` or `DamageSpell`.
@@ -130,3 +142,27 @@ function Spellcaster(name, health, mana){
    * @param  {Spellcaster} target         The spell target to be inflicted.
    * @return {boolean}                    Whether the spell was successfully cast.
    */
+   
+Spellcaster.prototype.invoke = function( spell, target ) {
+   if (spell === undefined || spell === null){
+      return false;
+   }
+   if (spell instanceof DamageSpell && !(target instanceof Spellcaster)){
+      return false;
+   }
+   if (spell instanceof DamageSpell && target instanceof Spellcaster) {
+      if(this.spendMana(spell.cost)){
+         target.inflictDamage(spell.damage);
+         return true;
+      } else {
+         return false;
+      }
+   }
+   if (spell instanceof Spell && !(target instanceof Spellcaster)){
+      if (this.spendMana(spell.cost)){
+         return true;
+      } else {
+         return false;
+      }
+   }
+};
